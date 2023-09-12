@@ -8,6 +8,8 @@ CREATE TABLE {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{
 	PRIMARY KEY ({{$from.PrimaryKey}}) NOT ENFORCED
 ) WITH (
 	{{ $from.Args | formatArgs }}
+	'database-name' = '{{.From.Database}}',
+	'table-name' = '{{.From.Table}}'
 );
 
 CREATE TABLE {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} (
