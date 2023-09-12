@@ -12,7 +12,7 @@ CREATE TABLE {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{
 	{{ $from.Args | formatArgs }}
 );
 
-CREATE TABLE {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} (
+CREATE TABLE {{ get $to.Args "connector" | snakecase }}_{{ $to.Database }}_{{ $to.Table }} (
 	{{- range $i,$col := $to.Fields }}
 	{{$col.GetName}} {{$col.GetType}},
 	{{- end }}
@@ -22,5 +22,7 @@ CREATE TABLE {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} (
 	'table-name' = '{{.From.Table}}',
 	{{ $to.Args | formatArgs }}
 );
+
+INSERT INTO {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} SELECT * FROM {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{{ $from.Table }};
 
 {{- end }}

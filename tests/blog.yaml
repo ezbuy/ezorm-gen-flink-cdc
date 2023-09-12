@@ -5,11 +5,11 @@ User:
   dbtable: users
   fields:
     - Id: int64
+      flags: [primary]
     - UserId: int32
     - Name: string
     - CreatedAt: int64
     - UpdatedAt: int64
-  primary: [Id, UserId]
   uniques:
   - [Name,UserId]
 ---
@@ -19,6 +19,7 @@ Blog:
   dbtable: blogs
   fields:
     - Id: int64
+      flags: [primary]
     - UserId: int32
     - Title: string
     - Content: string
@@ -27,7 +28,6 @@ Blog:
     - Readed: int32
     - CreatedAt: timestamp
     - UpdatedAt: timeint
-  primary: [Id, UserId]
   uniques:
   - [Title]
   - [UserId,Title]

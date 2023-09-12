@@ -4,8 +4,8 @@ go 1.21.0
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/ettle/strcase v0.1.1
 	github.com/ezbuy/ezorm/v2/pkg v0.0.11
+	github.com/iancoleman/strcase v0.3.0
 )
 
 require (

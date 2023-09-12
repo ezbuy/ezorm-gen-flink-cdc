@@ -8,10 +8,12 @@ CREATE TABLE mysql_cdc_test_blogs (
 	readed INTEGER,
 	created_at TIMESTAMP,
 	updated_at TIMESTAMP,
-	PRIMARY KEY (id,user_id) NOT ENFORCED
+	PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
+	'database-name' = 'test',
+	'table-name' = 'blogs',
 	'connector' = 'mysql-cdc'
-)
+);
 
 CREATE TABLE databend_test_blogs (
 	id BIGINT,
@@ -22,7 +24,11 @@ CREATE TABLE databend_test_blogs (
 	readed INTEGER,
 	created_at TIMESTAMP,
 	updated_at TIMESTAMP,
-	PRIMARY KEY (id,user_id) NOT ENFORCED
+	PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
+	'database-name' = 'test',
+	'table-name' = 'blogs',
 	'connector' = 'databend'
-)
+);
+
+INSERT INTO databend_test_blogs SELECT * FROM mysql_cdc_test_blogs;

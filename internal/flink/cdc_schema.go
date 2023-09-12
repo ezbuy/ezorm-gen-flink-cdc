@@ -7,13 +7,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/ettle/strcase"
 	"github.com/ezbuy/ezorm/v2/pkg/plugin"
+	"github.com/iancoleman/strcase"
 )
 
 //go:embed templates/*.tpl
@@ -56,32 +55,45 @@ func (s *Schema) Load(ctx context.Context, psm plugin.Schema) error {
 		var f Field
 		rf, ok := rawField.(map[string]any)
 		if !ok {
-			return fmt.Errorf("invalid field: %v", rawField)
+			return fmt.Errorf("rawField:invalid field: %v", rawField)
 		}
+
+		var fname string
+		var ftype string
+
 		for k, v := range rf {
-			switch k {
-			case "sqltype":
-				f.t = toFlinkSQLType(v.(string))
-			case "sqlname":
-				f.name = v.(string)
-			case "flags":
-				fg, ok := v.([]any)
-				if ok {
-					for _, flag := range fg {
-						flag := flag.(string)
-						if flag == "primary" &&
-							!slices.Contains(s.PKs, flag) {
-							s.PKs = append(s.PKs, strcase.ToSnake(f.name))
-						}
+			if k[:1] == strings.ToUpper(k[:1]) {
+				fname = strcase.ToSnake(k)
+				ftype = toFlinkSQLType(v.(string))
+			}
+		}
+
+		_, ok = rf["sqltype"]
+		if ok {
+			ftype = toFlinkSQLType(rf["sqltype"].(string))
+		}
+
+		_, ok = rf["sqlname"]
+		if ok {
+			fname = rf["sqlname"].(string)
+		}
+
+		f.name = fname
+		f.t = ftype
+
+		fl, ok := rf["flags"]
+		if ok {
+			fg, ok := fl.([]any)
+			if ok {
+				for _, flag := range fg {
+					flag := flag.(string)
+					if flag == "primary" {
+						s.PKs = append(s.PKs, strcase.ToSnake(f.name))
 					}
-				}
-			default:
-				if k[:1] == strings.ToUpper(k[:1]) {
-					f.name = strcase.ToSnake(k)
-					f.t = toFlinkSQLType(v.(string))
 				}
 			}
 		}
+
 		fs = append(fs, f)
 	}
 	s.Fields = fs
