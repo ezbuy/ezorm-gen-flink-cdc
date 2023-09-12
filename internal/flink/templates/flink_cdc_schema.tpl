@@ -7,9 +7,9 @@ CREATE TABLE {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{
 	{{- end }}
 	PRIMARY KEY ({{$from.PrimaryKey}}) NOT ENFORCED
 ) WITH (
-	{{ $from.Args | formatArgs }}
 	'database-name' = '{{.From.Database}}',
-	'table-name' = '{{.From.Table}}'
+	'table-name' = '{{.From.Table}}',
+	{{ $from.Args | formatArgs }}
 );
 
 CREATE TABLE {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} (
@@ -18,6 +18,8 @@ CREATE TABLE {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} (
 	{{- end }}
 	PRIMARY KEY ({{$to.PrimaryKey}}) NOT ENFORCED
 ) WITH (
+	'database-name' = '{{.From.Database}}',
+	'table-name' = '{{.From.Table}}',
 	{{ $to.Args | formatArgs }}
 );
 

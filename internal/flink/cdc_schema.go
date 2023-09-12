@@ -44,7 +44,10 @@ func (s *Schema) Load(ctx context.Context, psm plugin.Schema) error {
 	s.Database = psm["dbname"].(string)
 	s.Table = psm["dbtable"].(string)
 	rawFields := psm["fields"].([]any)
-	pks := psm["primary"].([]any)
+	var pks []any
+	if _, ok := psm["primary"]; ok {
+		pks = psm["primary"].([]any)
+	}
 	for _, pk := range pks {
 		s.PKs = append(s.PKs, strcase.ToSnake(pk.(string)))
 	}
@@ -62,9 +65,10 @@ func (s *Schema) Load(ctx context.Context, psm plugin.Schema) error {
 			case "sqlname":
 				f.name = v.(string)
 			case "flags":
-				fg, ok := v.([]string)
+				fg, ok := v.([]any)
 				if ok {
 					for _, flag := range fg {
+						flag := flag.(string)
 						if flag == "primary" &&
 							!slices.Contains(s.PKs, flag) {
 							s.PKs = append(s.PKs, strcase.ToSnake(f.name))
