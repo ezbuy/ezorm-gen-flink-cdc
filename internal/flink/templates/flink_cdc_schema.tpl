@@ -14,7 +14,7 @@ CREATE TABLE {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{
 
 CREATE TABLE {{ get $to.Args "connector" | snakecase }}_{{ $to.Database }}_{{ $to.Table }} (
 	{{- range $i,$col := $to.Fields }}
-	{{$col.GetName}} {{$col.GetType}},
+	{{$col.GetName | backtick }} {{$col.GetType}},
 	{{- end }}
 	PRIMARY KEY ({{$to.PrimaryKey}}) NOT ENFORCED
 ) WITH (
