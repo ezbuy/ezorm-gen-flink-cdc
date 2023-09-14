@@ -24,6 +24,7 @@ var files = []string{
 
 var templateFuncs = template.FuncMap{
 	"formatArgs": formatArgs,
+	"backtick":   backtick,
 }
 
 type Schema struct {
@@ -196,4 +197,8 @@ func formatArgs(args map[string]interface{}) string {
 		pairs = append(pairs, fmt.Sprintf(`'%s' = '%s'`, k, v))
 	}
 	return strings.Join(pairs, ",")
+}
+
+func backtick(raw string) string {
+	return fmt.Sprintf("`%s`", raw)
 }

@@ -3,7 +3,7 @@
 {{- $to := .To }}
 CREATE TABLE {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{{ $from.Table }} (
 	{{- range $i,$col := $from.Fields }}
-	{{$col.GetName}} {{$col.GetType}},
+	{{$col.GetName | backtick }} {{$col.GetType}},
 	{{- end }}
 	PRIMARY KEY ({{$from.PrimaryKey}}) NOT ENFORCED
 ) WITH (
