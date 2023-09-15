@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -19,7 +20,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "decode error: %s\n", err)
 			return
 		}
-		if err := req.Each(func(_ plugin.TemplateName, s plugin.Schema) error {
+		exes := make(map[plugin.TemplateName]flink.CDCExecution)
+		if err := req.Each(func(t plugin.TemplateName, s plugin.Schema) error {
 			d, err := s.GetDriver()
 			if err != nil {
 				return err
@@ -42,9 +44,30 @@ func main() {
 			if err := csm.Write(ctx, req.GetOutputPath()); err != nil {
 				return err
 			}
+			if csm.From.Args["connector"] == nil {
+				return errors.New("from.connector must be declared")
+			}
+			if csm.To.Args["connector"] == nil {
+				return errors.New("to.connector must be declared")
+			}
+			exes[t] = flink.CDCExecution{
+				From: flink.Execution{
+					Connector: csm.From.Args["connector"].(string),
+					Table:     csm.From.Table,
+					Database:  csm.From.Database,
+				},
+				To: flink.Execution{
+					Connector: csm.To.Args["connector"].(string),
+					Table:     csm.To.Table,
+					Database:  csm.To.Database,
+				},
+			}
 			return nil
 		}); err != nil {
 			fmt.Fprintf(os.Stderr, "each error: %s\n", err)
+		}
+		if err := flink.WriteExecutionTemplate(ctx, exes, req.GetOutputPath()); err != nil {
+			fmt.Fprintf(os.Stderr, "write execution template error: %q\n", err)
 		}
 	}
 }

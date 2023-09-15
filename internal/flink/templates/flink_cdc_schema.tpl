@@ -23,6 +23,4 @@ CREATE TABLE {{ get $to.Args "connector" | snakecase }}_{{ $to.Database }}_{{ $t
 	{{ $to.Args | formatArgs }}
 );
 
-INSERT INTO {{ get $to.Args "connector" }}_{{ $to.Database }}_{{ $to.Table }} SELECT * FROM {{ get $from.Args "connector" | snakecase }}_{{ $from.Database }}_{{ $from.Table }};
-
 {{- end }}

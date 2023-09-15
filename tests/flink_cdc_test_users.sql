@@ -24,5 +24,3 @@ CREATE TABLE databend_test_users (
 	'table-name' = 'users',
 	'connector' = 'databend'
 );
-
-INSERT INTO databend_test_users SELECT * FROM mysql_cdc_test_users;

@@ -30,5 +30,3 @@ CREATE TABLE databend_test_blogs (
 	'table-name' = 'blogs',
 	'connector' = 'databend'
 );
-
-INSERT INTO databend_test_blogs SELECT * FROM mysql_cdc_test_blogs;
